@@ -4,6 +4,7 @@ import sys
 import time
 from tkinter import *
 from tkinter import font
+from tkinter.messagebox import showinfo
 
 # alphabets = list(string.ascii_letters)
 # digits = list(string.digits)
@@ -67,7 +68,7 @@ def searchforpassword():
             file.close()
     except:
         with open('PWDs.txt', 'w+') as file:
-            print("aaaa")
+            showinfo("Alert", "Couldn't find the Password file. Created a new one")
     return
 # end def
 
@@ -80,9 +81,10 @@ h = int(root.winfo_screenheight() / 3)
 size = str(w) + "x" + str(h)
 root.geometry(size)
 root.resizable(False, False)
+root.title("Password manager")
 
 root.configure(background="#2e3440")
-root.iconbitmap(r"C:\Users\jodok\Documents\PWManager\lock.ico")
+root.iconbitmap(r"lock.ico")
 
 
 searchForPassword = Button(root, text="Search for a password", bg="#3b4252", fg="white", border=False,
