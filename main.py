@@ -11,41 +11,6 @@ digits = list(string.digits)
 special_characters = list("!@#$%^&*()")
 characters = list(string.ascii_letters + string.digits + "!@#$%^&*()")
 
-# def main(file):
-
-
-#         ans = input("Write 1 to set a new PWD, write 2 to search for a PWD\n")
-#         #Set a new password
-#         if(ans == "1"):
-#             website = input("Website: ")
-#             pWD = input("Password:      (write '-' to generate a random 20 character password)\n")
-#             content = file.read()
-#             if content == "":
-#                 file.write(website + " " + pWD)
-#             elif pWD == "-":
-#                 pWD = ""
-#                 for i in range(20):
-#                     pWD = pWD + random.choice(characters)
-
-#                 file.write('\n' + website+ " " + pWD)
-#             else:
-#                 file.write('\n' + website+ " " + pWD)
-
-#         #Search the a password from the website
-#         elif (ans == "2"):
-#             website = input("Website:")
-#             content = file.read()
-#             content = content.split()
-#             print(content)
-#             for i in range(len(content)):
-#                 if i % 2 != 0:
-#                     if website == content[i]:
-#                         print(content[i + 1])
-
-
-#         file.close()
-# # end main
-
 
 def searchforpassword():
     """
