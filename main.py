@@ -56,17 +56,31 @@ def searchforpassword():
     try:
         with open('PWDs.txt', 'r+') as file:
             # Search the a password from the website
-            website = input("Website:")
+            search_window = Toplevel()
+            search_window.geometry("300x25")
+            search_window.configure(background="#2e3440")
+            search_window.title("Search for password")
+            search_window.resizable(False, False)
+            search_window.iconbitmap(r"lock.ico")
+            
+
+            searchEntry = Entry(search_window, font=(
+                "Roboto"), background="#3b4252", fg="#ffffff", width=35, border=False, disabledbackground="#bf616a")
+            searchEntry.pack(
+                padx=4, pady=4)
+            searchEntry.insert(0, "Enter website")
+            search_window.bind('<FocusIn>', lambda x: searchEntry.delete(0,END))
+
+            # website = input("Website:")
             content = file.read()
             content = content.split()
-            print(content)
-            for i in range(len(content)):
-                if i % 2 != 0:
-                    if website == content[i]:
-                        print(content[i + 1])
+            # for i in range(len(content)):
+            #     if i % 2 != 0:
+            #         if website == content[i]:
+            #             print(content[i + 1])
 
             file.close()
-    except:
+    except FileNotFoundError:
         with open('PWDs.txt', 'w+') as file:
             showinfo(
                 "Alert", "Couldn't find the Password file. Created a new one.\nPlease try again")
@@ -117,7 +131,16 @@ def writeuserdataToFile():
             userwebsite = website.get()
             if userwebsite == "Website":
                 showinfo("Error", "Please enter a website")
+                generatePasswordWindow.destroy()
                 return
+            userwebsite = list(userwebsite)
+            for i in range(len(userwebsite)):
+                if userwebsite[i] == " ":
+                    showinfo(
+                        "Error", "The website can not contain any empty spaces ' '.")
+                    return
+            userwebsite = website.get()
+
             pWD = ownPassword.get()
             filecontent = file.read()
             file.write
@@ -131,6 +154,7 @@ def writeuserdataToFile():
                 "Alert", "Couldn't find the Password file. Created a new one.\nPlease try again after adding some Passwords")
             exit()
 
+
 def copytext(text):
     hiddenwindow = Toplevel()
     hiddenwindow.withdraw()
@@ -138,6 +162,7 @@ def copytext(text):
     hiddenwindow.clipboard_append(text)
     hiddenwindow.update()
     hiddenwindow.destroy()
+
 
 def openpasswordcopywindow(userpassword, username_):
     global copypasswordwindow
@@ -162,22 +187,22 @@ def openpasswordcopywindow(userpassword, username_):
     copypasswordfield.grid(row=1, sticky=W, columnspan=2)
     copypasswordfield.insert(0, userpassword)
     copypasswordfield.bind('<1>', lambda text: copytext(userpassword))
-    copypasswordfield.bind('<FocusIn>', lambda x: copypasswordfield.selection_range(0, END))
-    
-    
+    copypasswordfield.bind(
+        '<FocusIn>', lambda x: copypasswordfield.selection_range(0, END))
+
     usernamefield = Entry(copypasswordwindow, font=(
         "Roboto"), background="#3b4252", fg="#ffffff", width=36, border=1, disabledbackground="#bf616a")
     usernamefield.grid(row=0, columnspan=2, sticky=W)
     usernamefield.insert(0, username_)
     usernamefield.bind('<1>', lambda text: copytext(username_))
-    usernamefield.bind('<FocusIn>', lambda x: usernamefield.selection_range(0, END))
-    
-    
+    usernamefield.bind(
+        '<FocusIn>', lambda x: usernamefield.selection_range(0, END))
+
     continue_button = Button(copypasswordwindow, text="Continue", bg="#3b4252", fg="white", border=False,
-                           activebackground="#434c5e", activeforeground="#ffffff", font=("Roboto"), command=copypasswordwindow.destroy, width=17).grid(row=2, column=1, pady=0.5)
+                             activebackground="#434c5e", activeforeground="#ffffff", font=("Roboto"), command=copypasswordwindow.destroy, width=17).grid(row=2, column=1, pady=0.5)
 
     exit = Button(copypasswordwindow, text="Exit", bg="#3b4252", fg="white", border=False,
-                     activebackground="#434c5e", activeforeground="#ffffff", font=("Roboto"), command=root.destroy, width=17).grid(row=2, column=0, pady=0.5)
+                  activebackground="#434c5e", activeforeground="#ffffff", font=("Roboto"), command=root.destroy, width=17).grid(row=2, column=0, pady=0.5)
 
 
 def createnewPassword():
@@ -203,7 +228,7 @@ def createnewPassword():
     website.grid(row=0, column=0, sticky=W)
     website.insert(0, "Website")
     global clickedwebsite
-    clickedwebsite = website.bind('<Button-1>', clickWebsite)
+    clickedwebsite = website.bind('<FocusIn>', clickWebsite)
 
     global username
     username = Entry(generatePasswordWindow, font=(
@@ -211,7 +236,7 @@ def createnewPassword():
     username.grid(row=1, column=0, sticky=W)
     username.insert(0, "Username")
     global clickedusername
-    clickedusername = username.bind('<Button-1>', clickusername)
+    clickedusername = username.bind('<FocusIn>', clickusername)
 
     global ownPassword
     ownPassword = Entry(generatePasswordWindow, font=(
