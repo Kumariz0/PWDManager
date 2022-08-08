@@ -1,10 +1,8 @@
-import os
 import random
 import string
-import sys
-import time
 from tkinter import *
 from tkinter import font
+import tkinter
 from tkinter.messagebox import showinfo
 
 
@@ -57,27 +55,28 @@ def searchforpassword():
         with open('PWDs.txt', 'r+') as file:
             # Search the a password from the website
             search_window = Toplevel()
-            search_window.geometry("300x25")
+            search_window.geometry("330x65")
             search_window.configure(background="#2e3440")
             search_window.title("Search for password")
             search_window.resizable(False, False)
             search_window.iconbitmap(r"lock.ico")
-            
+            search_window.attributes('-topmost', True)
+            search_window.update()
 
             searchEntry = Entry(search_window, font=(
                 "Roboto"), background="#3b4252", fg="#ffffff", width=35, border=False, disabledbackground="#bf616a")
-            searchEntry.pack(
-                padx=4, pady=4)
+            searchEntry.grid(row=0, column=0,
+                             padx=4, pady=4)
             searchEntry.insert(0, "Enter website")
-            search_window.bind('<FocusIn>', lambda x: searchEntry.delete(0,END))
+            search_window.bind(
+                '<FocusIn>', lambda x: searchEntry.delete(0, END))
+            search_window.bind('<Return>', lambda x: enterbutton.invoke())
 
-            # website = input("Website:")
-            content = file.read()
-            content = content.split()
-            # for i in range(len(content)):
-            #     if i % 2 != 0:
-            #         if website == content[i]:
-            #             print(content[i + 1])
+            contents = file.read()
+
+            enterbutton = Button(search_window, text="Continue", bg="#3b4252", fg="white", border=False,
+                                 activebackground="#434c5e", activeforeground="#ffffff", font=("Roboto"), width=35, command=lambda: [openSearchResults(contents, searchEntry.get()), search_window.destroy()])
+            enterbutton.grid(row=1, column=0, padx=4, pady=4, sticky=W)
 
             file.close()
     except FileNotFoundError:
@@ -87,12 +86,40 @@ def searchforpassword():
     return
 
 
+def openSearchResults(contents, websitesearch):
+    searchresults = Toplevel()
+    searchresults.resizable(False, False)
+    searchresults.title("Password search result for: " + websitesearch)
+    searchresults.configure(background="#2e3440")
+    searchresults.iconbitmap(r"lock.ico")
+    searchresults.attributes('-topmost', True)
+    searchresults.update()
+
+    contents = contents.split()
+    results_website = ["Website"]
+    results_password = ["Password"]
+    for i in range(len(contents)):
+        if i % 2 == 0:
+            if websitesearch == contents[i]:
+                results_website.append(contents[i])
+                results_password.append(contents[i+1])
+                
+    results_website = tkinter.StringVar(value=results_website)
+    results_password = tkinter.StringVar(value=results_password)
+    
+    listofresults = Listbox(searchresults, bg="#3b4252", fg="white", border=False,
+                            font=("Roboto"), listvariable=results_website, selectmode='single')
+    listofresults.grid(row=0,column=0)
+    listofresults = Listbox(searchresults, bg="#3b4252", fg="white", border=False,
+                            font=("Roboto"), listvariable=results_password, selectmode='single')
+    listofresults.grid(row=0,column=1)
+
+
 def generateRandomPassword():
     global randomgeneratedpassword
     randomgeneratedpassword = ""
     for i in range(20):
-        randomgeneratedpassword = randomgeneratedpassword + \
-            random.choice(characters)
+        randomgeneratedpassword = randomgeneratedpassword + random.choice(characters)
 
     ownPassword.delete(0, END)
     ownPassword.insert(0, randomgeneratedpassword)
@@ -109,17 +136,6 @@ def entryDisable(value, ownPassword):
         ownPassword.config(state=DISABLED)
 
     return entryDisabled
-
-
-def openFile():
-    try:
-        with open('PWDs.txt', 'r+') as file:
-            return file
-    except:
-        with open('PWDs.txt', 'w+') as file:
-            showinfo(
-                "Alert", "Couldn't find the Password file. Created a new one.\nPlease try again after adding some Passwords")
-            exit()
 
 
 def writeuserdataToFile():
@@ -204,6 +220,9 @@ def openpasswordcopywindow(userpassword, username_):
     exit = Button(copypasswordwindow, text="Exit", bg="#3b4252", fg="white", border=False,
                   activebackground="#434c5e", activeforeground="#ffffff", font=("Roboto"), command=root.destroy, width=17).grid(row=2, column=0, pady=0.5)
 
+    copypasswordwindow.attributes('-topmost', True)
+    copypasswordwindow.update()
+
 
 def createnewPassword():
     global generatePasswordWindow
@@ -260,6 +279,9 @@ def createnewPassword():
     generatePasswordWindow.after(
         1, lambda: generatePasswordWindow.focus_force())
 
+    generatePasswordWindow.attributes('-topmost', True)
+    generatePasswordWindow.update()
+
 
 def clickWebsite(event):
     website.configure(state=NORMAL)
@@ -289,14 +311,16 @@ root.iconbitmap(r"lock.ico")
 
 
 searchForPassword = Button(root, text="Search for a password", bg="#3b4252", fg="white", border=False,
-                           activebackground="#434c5e", activeforeground="#ffffff", font=("Roboto"), command=searchforpassword)
+                           activebackground="#434c5e", activeforeground="#ffffff", font=("Roboto"), command=lambda: [searchforpassword(), root.attributes('-topmost', False)])
 
 newPassword = Button(root, text="Create a new password", bg="#3b4252", fg="white", border=False,
-                     activebackground="#434c5e", activeforeground="#ffffff", font=("Roboto"), command=createnewPassword)
+                     activebackground="#434c5e", activeforeground="#ffffff", font=("Roboto"), command=lambda: [createnewPassword(), root.attributes('-topmost', False)])
 
 searchForPassword.place(width=int((w/2) - (w/100 * 2)),
                         height=h-(h/100 * 2), relx=0.01, rely=0.01)
 newPassword.place(width=int((w/2) - (w/100 * 2)), height=h -
                   (h/100 * 2), relx=0.51, rely=0.01)
+root.attributes('-topmost', True)
+root.update()
 
 root.mainloop()
