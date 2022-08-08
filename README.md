@@ -1,6 +1,6 @@
 # Local password manager
 
-This is a local password manager. My idea whith this is that poeople without the code can't acces it so it can be put on a UBS-stick that it is only accesible when it is pluged in. That only allows hackers to steal the zdata when the USB-stick is lost.
+This is a local password manager. My idea with this is that poeople without the code can't access it. that way it can be put on a UBS-stick that it is only accessible when it's pluged in. That only allows hackers to steal the data when the USB-stick is lost.
 ## Installation
 
 Simply downlaod the EXE file out of the [Releases](https://github.com/Kumariz0/PWDManager/releases) Tab and execute it.
