@@ -1,9 +1,23 @@
+import sys
+import subprocess
+import pkg_resources
+
+required = {'cryptography'}
+installed = {pkg.key for pkg in pkg_resources.working_set}
+missing = required - installed
+
+if missing:
+    python = sys.executable
+    subprocess.check_call(
+        [python, '-m', 'pip', 'install', *missing], stdout=subprocess.DEVNULL)
+
 import random
 import string
 from tkinter import *
 from tkinter import font
 import tkinter
 from tkinter.messagebox import showinfo
+import cryptography
 
 
 phabets = list(string.ascii_letters)
@@ -12,9 +26,26 @@ special_characters = list("!@#$%^&*()")
 characters = list(string.ascii_letters + string.digits + "!@#$%^&*()")
 
 
+def firstRun():
+    try:
+        with open('.temp', 'r+') as file:
+            file.close()
+            return
+    except FileNotFoundError:
+        with open('.temp', 'w+') as file:
+            subprocess.check_call(["attrib","+H",".temp"])
+            file.write("firstRun(True)")
+            file.close()
+            
+            
+            
+    return
+
+firstRun()
+
 def searchforpassword():
     try:
-        with open('PWDs.txt', 'r+') as file:
+        with open('PWD', 'r+') as file:
             # Search the a password from the website
             search_window = Toplevel()
             search_window.geometry("330x65")
@@ -24,7 +55,7 @@ def searchforpassword():
             search_window.iconbitmap(r"lock.ico")
             search_window.attributes('-topmost', True)
             search_window.focus_force()
-            search_window.bind('<Escape>',lambda x: search_window.destroy())
+            search_window.bind('<Escape>', lambda x: search_window.destroy())
             search_window.update()
 
             searchEntry = Entry(search_window, font=(
@@ -44,7 +75,7 @@ def searchforpassword():
 
             file.close()
     except FileNotFoundError:
-        with open('PWDs.txt', 'w+') as file:
+        with open('PWD', 'w+') as file:
             showinfo(
                 "Alert", "Couldn't find the Password file. Created a new one.\nPlease try again")
     return
@@ -58,7 +89,7 @@ def openSearchResults(contents, websitesearch):
     searchresults.iconbitmap(r"lock.ico")
     searchresults.attributes('-topmost', True)
     searchresults.focus_force()
-    searchresults.bind('<Escape>',lambda x: searchresults.destroy())
+    searchresults.bind('<Escape>', lambda x: searchresults.destroy())
     searchresults.update()
 
     contents = contents.split()
@@ -71,27 +102,28 @@ def openSearchResults(contents, websitesearch):
                 results_website.append(contents[i])
                 results_username.append(contents[i+1])
                 results_password.append(contents[i+2])
-                
+
     results_website = tkinter.StringVar(value=results_website)
     results_username = tkinter.StringVar(value=results_username)
     results_password = tkinter.StringVar(value=results_password)
-    
+
     listofresults_website = Listbox(searchresults, bg="#3b4252", fg="white", border=False,
-                            font=("Roboto"), listvariable=results_website, selectmode='single')
-    listofresults_website.grid(row=0,column=0)
+                                    font=("Roboto"), listvariable=results_website, selectmode='single')
+    listofresults_website.grid(row=0, column=0)
     listofresults_username = Listbox(searchresults, bg="#3b4252", fg="white", border=False,
-                            font=("Roboto"), listvariable=results_username, selectmode='single')
-    listofresults_username.grid(row=0,column=1)
+                                     font=("Roboto"), listvariable=results_username, selectmode='single')
+    listofresults_username.grid(row=0, column=1)
     listofresults_password = Listbox(searchresults, bg="#3b4252", fg="white", border=False,
-                            font=("Roboto"), listvariable=results_password, selectmode='single')
-    listofresults_password.grid(row=0,column=2)
+                                     font=("Roboto"), listvariable=results_password, selectmode='single')
+    listofresults_password.grid(row=0, column=2)
 
 
 def generateRandomPassword():
     global randomgeneratedpassword
     randomgeneratedpassword = ""
     for i in range(20):
-        randomgeneratedpassword = randomgeneratedpassword + random.choice(characters)
+        randomgeneratedpassword = randomgeneratedpassword + \
+            random.choice(characters)
 
     ownPassword.delete(0, END)
     ownPassword.insert(0, randomgeneratedpassword)
@@ -113,12 +145,12 @@ def entryDisable(value, ownPassword):
 def writeuserdataToFile():
 
     try:
-        with open('PWDs.txt', 'r+') as file:
+        with open('PWD', 'r+') as file:
 
             username_ = username.get()
             userwebsite = website.get()
-            
-            #Check if the given Website is valid (not Website or doesn't have any spaces)
+
+            # Check if the given Website is valid (not Website or doesn't have any spaces)
             if userwebsite == "Website" or userwebsite == "":
                 showinfo("Error", "Please enter a website")
                 generatePasswordWindow.destroy()
@@ -130,10 +162,11 @@ def writeuserdataToFile():
                         "Error", "The website can not contain any empty spaces ' '.")
                     return
             userwebsite = website.get()
-            
-            #Check the same things exept for the Username
+
+            # Check the same things exept for the Username
             if username_ == "Username" or username_ == "":
-                showinfo("Error", "Please enter a username (can also be a E-Mail adress)")
+                showinfo(
+                    "Error", "Please enter a username (can also be a E-Mail adress)")
                 generatePasswordWindow.destroy()
                 return
             username_ = list(username_)
@@ -143,16 +176,15 @@ def writeuserdataToFile():
                         "Error", "The Username can not contain any empty spaces ' '.")
                     return
             username_ = username.get()
-            
 
             pWD = ownPassword.get()
             filecontent = file.read()
-            file.write('\n' + userwebsite + " "+ username_ + " " + pWD)
+            file.write('\n' + userwebsite + " " + username_ + " " + pWD)
             generatePasswordWindow.destroy()
             openpasswordcopywindow(pWD, username_, userwebsite)
 
     except FileNotFoundError:
-        with open('PWDs.txt', 'w+') as file:
+        with open('PWD', 'w+') as file:
             showinfo(
                 "Alert", "Couldn't find the Password file. Created a new one.\nPlease try again after adding some Passwords")
             exit()
@@ -181,7 +213,7 @@ def openpasswordcopywindow(userpassword, username_, userwebsite):
 
     copypasswordwindow.configure(background="#2e3440")
     copypasswordwindow.iconbitmap(r"lock.ico")
-    copypasswordwindow.bind('<Escape>',lambda x: copypasswordwindow.destroy())
+    copypasswordwindow.bind('<Escape>', lambda x: copypasswordwindow.destroy())
 
     copypasswordwindow.after(
         1, lambda: copypasswordwindow.focus_force())
@@ -201,7 +233,6 @@ def openpasswordcopywindow(userpassword, username_, userwebsite):
     usernamefield.bind('<1>', lambda text: copytext(username_))
     usernamefield.bind(
         '<FocusIn>', lambda x: usernamefield.selection_range(0, END))
-    
 
     continue_button = Button(copypasswordwindow, text="Continue", bg="#3b4252", fg="white", border=False,
                              activebackground="#434c5e", activeforeground="#ffffff", font=("Roboto"), command=copypasswordwindow.destroy, width=17).grid(row=2, column=1, pady=0.5)
@@ -227,7 +258,8 @@ def createnewPassword():
 
     generatePasswordWindow.configure(background="#2e3440")
     generatePasswordWindow.iconbitmap(r"lock.ico")
-    generatePasswordWindow.bind('<Escape>',lambda x: generatePasswordWindow.destroy())
+    generatePasswordWindow.bind(
+        '<Escape>', lambda x: generatePasswordWindow.destroy())
 
     var = IntVar()
 
@@ -311,7 +343,7 @@ searchForPassword.place(width=int((w/2) - (w/100 * 2)),
 newPassword.place(width=int((w/2) - (w/100 * 2)), height=h -
                   (h/100 * 2), relx=0.51, rely=0.01)
 root.attributes('-topmost', True)
-root.bind('<Escape>',lambda x: root.destroy())
+root.bind('<Escape>', lambda x: root.destroy())
 root.update()
 
 root.mainloop()
