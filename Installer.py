@@ -4,6 +4,13 @@ import sys
 import subprocess
 import pkg_resources
 
+try:
+    os.system("pip uninstall pyinstaller")
+    input("Press anything to continue")
+    os.system("python -m pip install pyinstaller")
+except:
+    print("installing libraries")
+
 required = {'cryptography', 'pyinstaller'}
 installed = {pkg.key for pkg in pkg_resources.working_set}
 missing = required - installed
